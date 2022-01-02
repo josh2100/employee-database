@@ -15,8 +15,9 @@ CREATE TABLE department (
 CREATE TABLE role (
   id INTEGER AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(30) UNIQUE NOT NULL,
-  department NOT NULL, -- Constraint with department?
   salary DECIMAL NOT NULL,
+  department_id INTEGER UNIQUE NOT NULL, -- Constraint with department?
+  
 );
 
 -- WHEN I choose to view all employees
@@ -27,10 +28,8 @@ CREATE TABLE employee (
   id INTEGER AUTO_INCREMENT PRIMARY KEY,
   first_name VARCHAR(30),
   last_name VARCHAR (30),
-  title VARCHAR (30), -- Constraint with role?
-  department VARCHAR (30), -- Constraint with department?
-  salary DECIMAL NOT NULL, -- Constraint with role salary?
-  manager VARCHAR (30),
+  role_id INTEGER UNIQUE NOT NULL, -- Constraint with role?, connects to department, salary
+  manager_id VARCHAR (30),
 );
 
 

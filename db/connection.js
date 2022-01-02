@@ -5,11 +5,13 @@ const mysql = require("mysql2");
 const db = mysql.createConnection(
   {
     host: "127.0.0.1", // others use 'localhost'
-    user: "process.env.DB_USER",
-    password: "process.env.DB_PW",
-    database: "process.env.DB_NAME",
+    user: "root",
+    password: "mysql00",
+    database: "employees",
   },
   console.log("Connected to the EMPLOYEES database.")
 );
+
+db.connect();
 
 module.exports = db;

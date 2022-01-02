@@ -1,0 +1,24 @@
+{
+  "name": "employee-database",
+  "version": "1.0.0",
+  "description": "User Story AS A business owner I WANT to be able to view and manage the departments, roles, and employees in my company SO THAT I can organize and plan my business",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/josh2100/employee-database.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/josh2100/employee-database/issues"
+  },
+  "homepage": "https://github.com/josh2100/employee-database#readme",
+  "dependencies": {
+    "mysql2": "^2.3.3"
+  }
+}

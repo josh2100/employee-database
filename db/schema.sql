@@ -16,8 +16,7 @@ CREATE TABLE role (
   id INTEGER AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(30) UNIQUE NOT NULL,
   salary DECIMAL NOT NULL,
-  department_id INTEGER UNIQUE NOT NULL, -- Constraint with department?
-  
+  department_id INTEGER UNIQUE NOT NULL, -- Reference to department role belongs to
 );
 
 -- WHEN I choose to view all employees
@@ -29,9 +28,8 @@ CREATE TABLE employee (
   first_name VARCHAR(30),
   last_name VARCHAR (30),
   role_id INTEGER UNIQUE NOT NULL, -- Constraint with role?, connects to department, salary
-  manager_id VARCHAR (30),
+  manager_id INTEGER NULL,
 );
-
 
 -- DROP TABLE IF EXISTS votes;
 -- DROP TABLE IF EXISTS candidates;

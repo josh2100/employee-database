@@ -1,5 +1,9 @@
 # Employee-Database
 
+This node application allows a user to maintain an employee database.
+
+Created with MySQL, Node.js, and Inquirer.
+
 User Story
 AS A business owner
 I WANT to be able to view and manage the departments, roles, and employees in my company

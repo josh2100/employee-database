@@ -1,30 +1,27 @@
--- DROP TABLE IF EXISTS employee;
--- DROP TABLE IF EXISTS roles;
--- DROP TABLE IF EXISTS department;
+DROP TABLE IF EXISTS employee;
+DROP TABLE IF EXISTS roles;
+DROP TABLE IF EXISTS department;
 
 CREATE TABLE department (
   id INTEGER AUTO_INCREMENT PRIMARY KEY,
-  department_name VARCHAR(30) UNIQUE NOT NULL
+  department_name VARCHAR(30) NOT NULL
 );
 
--- CREATE TABLE roles (
---   id INTEGER AUTO_INCREMENT PRIMARY KEY,
---   title VARCHAR(30) UNIQUE NOT NULL,
---   salary DECIMAL NOT NULL,
---   department_id INTEGER UNIQUE NOT NULL, -- Reference to department role belongs to
--- );
+CREATE TABLE roles (
+  id INTEGER AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(30) NOT NULL,
+  salary DECIMAL NOT NULL,
+  department_id INTEGER NOT NULL, -- Reference to department role belongs to
+  CONSTRAINT fk_department FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE CASCADE
+);
 
--- WHEN I choose to view all employees
--- THEN I am presented with a formatted table showing employee data, including employee ids,
--- first names, last names, job titles, departments, salaries, and managers that the employees
---  report to
--- CREATE TABLE employee (
---   id INTEGER AUTO_INCREMENT PRIMARY KEY,
---   first_name VARCHAR(30),
---   last_name VARCHAR (30),
---   role_id INTEGER UNIQUE NOT NULL, -- Constraint with role?, connects to department, salary
---   manager_id INTEGER NULL,
--- );
+CREATE TABLE employee (
+  id INTEGER AUTO_INCREMENT PRIMARY KEY,
+  first_name VARCHAR(30),
+  last_name VARCHAR (30),
+  role_id INTEGER NOT NULL, -- Constraint with role?, connects to department, salary
+  manager_id INTEGER NULL
+);
 
 -- DROP TABLE IF EXISTS votes;
 -- DROP TABLE IF EXISTS candidates;

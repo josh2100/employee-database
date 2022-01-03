@@ -1,14 +1,71 @@
+const inquirer = require("inquirer");
+
 // functions for performing specific sql queries
-// constructor function
+// constructor function, new sql query ect
 const db = require("../db/connection.js");
+const cTable = console.table;
+//
+// const options = require("./prompts");
 
 // mysql2 methods query,
+const options = () => {
+  return inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "choice",
+        message: "What would you like to do?",
+        choices: ["View Departments", "View Roles", "Finish Page"],
+      },
+    ])
+    .then((responses) => {
+      switch (responses.choice) {
+        case "View Departments":
+          //   console.log("view departments here util prompts.js");
+          viewDepartments();
+          break;
+        case "View Roles":
+          console.log("View roles here util prompts.js");
+          viewRoles();
+          break;
+        default:
+          console.log("ended inquirer line24 util prompts.js");
+      }
+    });
+};
 
 const viewDepartments = () => {
-  console.log("YES");
-  // function, const queryString = "SELECT * FROM departments";
-  // db.query()
-  // function
+  const sql = "SELECT * FROM department";
+
+  db.query(sql, (err, results) => {
+    if (err) throw err;
+    console.log("Viewing all Departments:");
+    cTable(results);
+  });
+  // call check question function?
+  // options();
+};
+
+const viewRoles = () => {
+  const sql = "SELECT * FROM roles";
+
+  db.query(sql, (err, results) => {
+    if (err) throw err;
+    console.log("Viewing all Roles:");
+    cTable(results);
+  });
+  // call check question function?
+};
+
+const viewEmployees = () => {
+  const sql = "SELECT * FROM employee";
+
+  db.query(sql, (err, results) => {
+    if (err) throw err;
+    console.log("Viewing all Employees:");
+    cTable(results);
+  });
+  // call check question function?
 };
 
 // options: view all departments - return department names and department ids
@@ -33,4 +90,4 @@ const viewDepartments = () => {
 // View the total utilized budget of a department—in other words,
 // the combined salaries of all employees in that department.
 
-module.exports = viewDepartments;
+module.exports = { options, viewDepartments, viewRoles, viewEmployees };

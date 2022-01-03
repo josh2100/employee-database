@@ -1,13 +1,11 @@
 const inquirer = require("inquirer");
-
-// functions for performing specific sql queries
-// constructor function, new sql query ect
 const db = require("../db/connection.js");
 const cTable = console.table;
-//
-// const options = require("./prompts");
 
-// mysql2 methods query,
+// // options: view all departments, view all roles, view all employees,
+// // add a department, add a role, add an employee, and update an employee role
+
+// Inquirer initial prompt
 const options = () => {
   return inquirer
     .prompt([
@@ -15,7 +13,7 @@ const options = () => {
         type: "list",
         name: "choice",
         message: "What would you like to do?",
-        choices: ["View Departments", "View Roles", "End"],
+        choices: ["View Departments", "View Roles", "View Employees", "End"],
       },
     ])
     .then((responses) => {
@@ -27,6 +25,10 @@ const options = () => {
         case "View Roles":
           console.log("View roles here util prompts.js");
           viewRoles();
+          break;
+        case "View Employees":
+          console.log("View employees here util prompts.js");
+          viewEmployees();
           break;
         default:
           console.log("Database connection ended");
@@ -43,7 +45,10 @@ const viewDepartments = () => {
     console.log("Viewing all Departments:");
     cTable(results);
   });
-  // call check question function?
+  // Show prompts again
+  setTimeout(() => {
+    options();
+  }, 1000);
   // options();
 };
 
@@ -55,7 +60,10 @@ const viewRoles = () => {
     console.log("Viewing all Roles:");
     cTable(results);
   });
-  // call check question function?
+  // Show prompts again
+  setTimeout(() => {
+    options();
+  }, 1000);
 };
 
 const viewEmployees = () => {
@@ -66,7 +74,10 @@ const viewEmployees = () => {
     console.log("Viewing all Employees:");
     cTable(results);
   });
-  // call check question function?
+  // Show prompts again
+  setTimeout(() => {
+    options();
+  }, 1000);
 };
 
 // options: view all departments - return department names and department ids

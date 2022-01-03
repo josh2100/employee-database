@@ -9,7 +9,10 @@ const {
 const { options } = require("./util/sqlQueries");
 
 const db = require("./db/connection");
-// inquirer?
+
+const init = async () => {
+  const result = await options();
+};
 
 // call inquirer functions from util
 // make util folder with inquirer functions and constructor
@@ -17,11 +20,11 @@ const db = require("./db/connection");
 // Start SQL connection
 db.connect((err) => {
   if (err) throw err;
-  //   console.log("Employees database connected.");
   // Test sql queries
   //   viewDepartments();
   //   viewRoles();
   //   viewEmployees();
+
   options();
 });
 

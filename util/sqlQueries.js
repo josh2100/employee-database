@@ -15,7 +15,7 @@ const options = () => {
         type: "list",
         name: "choice",
         message: "What would you like to do?",
-        choices: ["View Departments", "View Roles", "Finish Page"],
+        choices: ["View Departments", "View Roles", "End"],
       },
     ])
     .then((responses) => {
@@ -29,7 +29,8 @@ const options = () => {
           viewRoles();
           break;
         default:
-          console.log("ended inquirer line24 util prompts.js");
+          console.log("Database connection ended");
+          db.end();
       }
     });
 };

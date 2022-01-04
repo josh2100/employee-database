@@ -13,23 +13,32 @@ const options = () => {
         type: "list",
         name: "choice",
         message: "What would you like to do?",
-        choices: ["View Departments", "View Roles", "View Employees", "End"],
+        choices: [
+          "View Departments",
+          "View Roles",
+          "View Employees",
+          "Add a Department",
+          "End",
+        ],
       },
     ])
     .then((responses) => {
       switch (responses.choice) {
         case "View Departments":
-          //   console.log("view departments here util prompts.js");
           viewDepartments();
           break;
         case "View Roles":
-          console.log("View roles here util prompts.js");
           viewRoles();
           break;
         case "View Employees":
-          console.log("View employees here util prompts.js");
           viewEmployees();
           break;
+
+        case "Add a Department":
+          console.log("Add department here util prompts.js");
+          addDepartment();
+          break;
+
         default:
           console.log("Database connection ended");
           db.end();
@@ -81,8 +90,39 @@ const viewEmployees = () => {
 };
 
 const addDepartment = () => {
-  const sql = "INSERT into department (department_name) VALUES (?)";
-  // const params = [something.something]
+  // Start with inquirer, ask what to name the department
+  return inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "nameOfDepartment",
+        message: "Input name of new Department",
+      },
+    ])
+    .then((responses) => {
+      const params = [responses.nameOfDepartment];
+      const sql = "INSERT into department (department_name) VALUES (?)";
+
+      console.log(params);
+
+      db.query(sql, params, (err, result) => {
+        if (err) {
+          res.status(400).json({ error: err.message });
+          return;
+        }
+        res.json({
+          message: "success",
+          data: body,
+        });
+      });
+
+      // Show prompts again
+      setTimeout(() => {
+        options();
+      }, 1000);
+    });
+
+  // const params = [responses.name]
 
   // db.query(sql, params, (err, result) => {
   //   if (err) {
@@ -95,9 +135,6 @@ const addDepartment = () => {
   //   });
   // });
 };
-
-
-
 
 // Data validation
 // const errors = inputCheck(body, "first_name", "last_name", "email");

@@ -80,6 +80,46 @@ const viewEmployees = () => {
   }, 1000);
 };
 
+const addDepartment = () => {
+  const sql = "INSERT into department (department_name) VALUES (?)";
+  // const params = [something.something]
+
+  // db.query(sql, params, (err, result) => {
+  //   if (err) {
+  //     res.status(400).json({ error: err.message });
+  //     return;
+  //   }
+  //   res.json({
+  //     message: "success",
+  //     data: body,
+  //   });
+  // });
+};
+
+
+
+
+// Data validation
+// const errors = inputCheck(body, "first_name", "last_name", "email");
+// if (errors) {
+//   res.status(400).json({ error: errors });
+//   return;
+// }
+
+// const sql = `INSERT INTO voters (first_name, last_name, email) VALUES (?,?,?)`;
+// const params = [body.first_name, body.last_name, body.email];
+
+// db.query(sql, params, (err, result) => {
+//   if (err) {
+//     res.status(400).json({ error: err.message });
+//     return;
+//   }
+//   res.json({
+//     message: "success",
+//     data: body,
+//   });
+// });
+
 // options: view all departments - return department names and department ids
 // view all roles -  job title, role id, the department that role belongs to, and
 // the salary for that role

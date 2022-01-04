@@ -10,6 +10,7 @@ const { options } = require("./util/sqlQueries");
 
 const db = require("./db/connection");
 
+// Async experiment
 const init = async () => {
   const result = await options();
 };

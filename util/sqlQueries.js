@@ -18,6 +18,7 @@ const options = () => {
           "View Roles",
           "View Employees",
           "Add a Department",
+          "Add an Employee",
           "End",
         ],
       },
@@ -35,8 +36,12 @@ const options = () => {
           break;
 
         case "Add a Department":
-          console.log("Add department here util prompts.js");
           addDepartment();
+          break;
+
+        case "Add an Employee":
+          console.log("Add employee here util prompts.js");
+          addEmployee();
           break;
 
         default:
@@ -53,26 +58,33 @@ const viewDepartments = () => {
     if (err) throw err;
     console.log("Viewing all Departments:");
     cTable(results);
-  });
-  // Show prompts again
-  setTimeout(() => {
+
     options();
-  }, 1000);
+  });
+
+  // Show prompts again
+  // setTimeout(() => {
+  //   options();
+  // }, 1000);
   // options();
 };
 
-const viewRoles = () => {
+const viewRoles = async () => {
   const sql = "SELECT * FROM roles";
 
-  db.query(sql, (err, results) => {
-    if (err) throw err;
-    console.log("Viewing all Roles:");
-    cTable(results);
-  });
-  // Show prompts again
-  setTimeout(() => {
+  try {
+    const [data] = await db.promise().query(sql);
+    cTable(data);
     options();
-  }, 1000);
+  } catch (error) {
+    console.log(error);
+  }
+
+  // db.query(sql, (err, results) => {
+  //   if (err) throw err;
+  //   console.log("Viewing all Roles:");
+  //   cTable(results);
+  // });
 };
 
 const viewEmployees = () => {
@@ -107,19 +119,12 @@ const addDepartment = () => {
 
       db.query(sql, params, (err, result) => {
         if (err) {
-          res.status(400).json({ error: err.message });
+          console.log(err);
           return;
         }
-        res.json({
-          message: "success",
-          data: body,
-        });
-      });
-
-      // Show prompts again
-      setTimeout(() => {
+        console.log("New Department added");
         options();
-      }, 1000);
+      });
     });
 
   // const params = [responses.name]
@@ -136,26 +141,48 @@ const addDepartment = () => {
   // });
 };
 
-// Data validation
-// const errors = inputCheck(body, "first_name", "last_name", "email");
-// if (errors) {
-//   res.status(400).json({ error: errors });
-//   return;
-// }
+const addEmployee = async () => {
+  try {
+    // query to find out employees who are managers are null
+    const managers = await db
+      .promise()
+      // .query("SELECT * FROM employee WHERE manager_id = ?", [null]);
+      .query("SELECT first_name FROM employee WHERE manager_id = ?", [null]);
 
-// const sql = `INSERT INTO voters (first_name, last_name, email) VALUES (?,?,?)`;
-// const params = [body.first_name, body.last_name, body.email];
+    console.log(managers);
+    // inquirer what is name of employee
+    const responses = await inquirer.prompt([
+      {
+        type: "input",
+        name: "firstName",
+        message: "Input first name of new Employee",
+      },
+      {
+        type: "input",
+        name: "lastName",
+        message: "Input last name of new Employee",
+      },
+      {
+        type: "list",
+        name: "manager",
+        message: "Input manager of new Employee",
+        choices: managers,
+      },
+    ]);
 
-// db.query(sql, params, (err, result) => {
-//   if (err) {
-//     res.status(400).json({ error: err.message });
-//     return;
-//   }
-//   res.json({
-//     message: "success",
-//     data: body,
-//   });
-// });
+    const [data] = await db.promise().query(sql); // sql is not defined
+    console.log(data.managers);
+    cTable(data);
+    options();
+  } catch (error) {
+    console.log(error);
+  }
+
+  // first name and last name
+  // what id is their role
+  //
+  // what manager do they have
+};
 
 // options: view all departments - return department names and department ids
 // view all roles -  job title, role id, the department that role belongs to, and
@@ -168,7 +195,6 @@ const addDepartment = () => {
 // update employee role- select an employee to update and their new role and this information
 // is updated in the database
 
-/// bonus
 // Bonus
 // Try to add some additional functionality to your application, such as
 // the ability to do the following:
@@ -179,4 +205,11 @@ const addDepartment = () => {
 // View the total utilized budget of a department—in other words,
 // the combined salaries of all employees in that department.
 
-module.exports = { options, viewDepartments, viewRoles, viewEmployees };
+module.exports = {
+  options,
+  viewDepartments,
+  viewRoles,
+  viewEmployees,
+  addDepartment,
+  addEmployee,
+};

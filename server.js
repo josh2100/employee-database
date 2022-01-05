@@ -4,6 +4,7 @@ const {
   viewDepartments,
   viewRoles,
   viewEmployees,
+  addDepartment,
 } = require("./util/sqlQueries");
 
 const { options } = require("./util/sqlQueries");

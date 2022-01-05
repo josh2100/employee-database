@@ -20,7 +20,9 @@ CREATE TABLE employee (
   first_name VARCHAR(30),
   last_name VARCHAR (30),
   role_id INTEGER NOT NULL, -- Constraint with role?, connects to department, salary
-  manager_id INTEGER NULL
+  manager_id INTEGER,
+  CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
+  CONSTRAINT fk_manager_id FOREIGN KEY (manager_id) REFERENCES employee(id) ON DELETE SET NULL 
 );
 
 -- DROP TABLE IF EXISTS votes;

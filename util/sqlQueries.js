@@ -144,12 +144,14 @@ const addDepartment = () => {
 const addEmployee = async () => {
   try {
     // query to find out employees who are managers are null
-    const managers = await db
+    let managers = await db
       .promise()
-      // .query("SELECT * FROM employee WHERE manager_id = ?", [null]);
       .query("SELECT first_name FROM employee WHERE manager_id = ?", [null]);
 
     console.log(managers);
+    console.log({ managers });
+    console.log([managers]);
+
     // inquirer what is name of employee
     const responses = await inquirer.prompt([
       {
@@ -170,10 +172,16 @@ const addEmployee = async () => {
       },
     ]);
 
+    // define sql by getting managers?
+    let sql = "SELECT first_name FROM employee WHERE manager_id = null";
+
     const [data] = await db.promise().query(sql); // sql is not defined
     console.log(data.managers);
-    cTable(data);
-    options();
+    cTable(data); // undef
+    cTable(managers); //
+    cTable(data.first_name);
+    cTable(data.id); // undef
+    // options();
   } catch (error) {
     console.log(error);
   }

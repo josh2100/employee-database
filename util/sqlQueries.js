@@ -93,6 +93,7 @@ const viewEmployees = async () => {
 };
 
 const viewManagers = async () => {
+  // null safe operator must be used! <=>
   const sql = "SELECT first_name FROM employee WHERE manager_id <=> ?";
   const params = [null];
 

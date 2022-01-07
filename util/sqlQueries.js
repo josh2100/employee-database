@@ -19,6 +19,7 @@ const options = () => {
           "View Employees",
           "Add a Department",
           "Add an Employee",
+          "View Managers", // only for testing
           "End",
         ],
       },
@@ -34,14 +35,17 @@ const options = () => {
         case "View Employees":
           viewEmployees();
           break;
-
         case "Add a Department":
           addDepartment();
           break;
-
         case "Add an Employee":
           console.log("Add employee here util prompts.js");
           addEmployee();
+          break;
+
+        case "View Managers":
+          console.log("Add employee here util prompts.js");
+          viewManagers();
           break;
 
         default:
@@ -80,6 +84,20 @@ const viewEmployees = async () => {
 
   try {
     const [data] = await db.promise().query(sql);
+    cTable(data);
+    // omit options for viewmanagers?
+    options();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const viewManagers = async () => {
+  const sql = "SELECT first_name FROM employee WHERE manager_id <=> ?";
+  const params = [null];
+
+  try {
+    const [data] = await db.promise().query(sql, params);
     cTable(data);
     // omit options for viewmanagers?
     options();
@@ -129,17 +147,10 @@ const addDepartment = () => {
 };
 
 const addEmployee = async () => {
+  // Make array of responses
+  let answers = [];
+  // inquire first and last name of employees
   try {
-    // query to find out employees who are managers are null
-    let managers = await db
-      .promise()
-      .query("SELECT first_name FROM employee WHERE manager_id = ?", [null]);
-
-    console.log(managers);
-    console.log({ managers });
-    console.log([managers]);
-    cTable([managers.first_name]);
-
     // inquirer what is name of employee
     const responses = await inquirer.prompt([
       {
@@ -152,34 +163,81 @@ const addEmployee = async () => {
         name: "lastName",
         message: "Input last name of new Employee",
       },
-      {
-        type: "list",
-        name: "manager",
-        message: "Input manager of new Employee",
-        choices: managers,
-      },
+      // {
+      //   type: "list",
+      //   name: "manager",
+      //   message: "Input manager of new Employee",
+      //   choices: managers,
+      // },
     ]);
+    console.log(responses);
+    console.log(responses.firstName);
+    viewManagers();
 
-    // define sql by getting managers?
-    let sql = "SELECT first_name FROM employee WHERE manager_id = null";
-
-    cTable(managers); //
-    const [data] = await db.promise().query(sql); // sql is not defined
-    console.log(data.managers);
-    cTable(data); // undef
-
-    cTable(data.first_name);
-    cTable(data.id); // undef
-    // options();
+    // function askWhichManager could return object with id of manager with validations
+    //
   } catch (error) {
     console.log(error);
   }
-
-  // first name and last name
-  // what id is their role
-  //
-  // what manager do they have
+  // push name to answers
+  // Display list of managers,
+  // inquire what manager this employee reports to
 };
+
+// const addEmployee = async () => {
+//   // viewManagers();
+
+//   try {
+//     // query to find out employees who are managers are null
+//     let [managers] = await db
+//       .promise()
+//       .query("SELECT first_name FROM employee WHERE manager_id = ?", [null]);
+
+//     console.log(managers);
+//     console.log({ managers });
+//     console.log([managers]);
+//     cTable(managers);
+
+//     // inquirer what is name of employee
+//     const responses = await inquirer.prompt([
+//       {
+//         type: "input",
+//         name: "firstName",
+//         message: "Input first name of new Employee",
+//       },
+//       {
+//         type: "input",
+//         name: "lastName",
+//         message: "Input last name of new Employee",
+//       },
+//       {
+//         type: "list",
+//         name: "manager",
+//         message: "Input manager of new Employee",
+//         choices: managers,
+//       },
+//     ]);
+
+//     // define sql by getting managers?
+//     let sql = "SELECT first_name FROM employee WHERE manager_id = null";
+
+//     cTable(managers); //
+//     const [data] = await db.promise().query(sql); // sql is not defined
+//     console.log(data.managers);
+//     cTable(data); // undef
+
+//     cTable(data.first_name);
+//     cTable(data.id); // undef
+//     // options();
+//   } catch (error) {
+//     console.log(error);
+//   }
+
+//   // first name and last name
+//   // what id is their role
+//   //
+//   // what manager do they have
+// };
 
 // options: view all departments - return department names and department ids
 // view all roles -  job title, role id, the department that role belongs to, and

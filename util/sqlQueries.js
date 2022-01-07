@@ -5,7 +5,7 @@ const cTable = console.table;
 // // options: view all departments, view all roles, view all employees,
 // // add a department, add a role, add an employee, and update an employee role
 
-// Inquirer initial prompt
+// Inquirer initial prompt, return to this menu after every question
 const options = () => {
   return inquirer
     .prompt([
@@ -51,15 +51,16 @@ const options = () => {
     });
 };
 
-const viewDepartments = () => {
+const viewDepartments = async () => {
   const sql = "SELECT * FROM department";
 
-  db.query(sql, (err, results) => {
-    if (err) throw err;
-    cTable(results);
-
+  try {
+    const [data] = await db.promise().query(sql);
+    cTable(data);
     options();
-  });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const viewRoles = async () => {

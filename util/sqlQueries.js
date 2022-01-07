@@ -56,17 +56,10 @@ const viewDepartments = () => {
 
   db.query(sql, (err, results) => {
     if (err) throw err;
-    console.log("Viewing all Departments:");
     cTable(results);
 
     options();
   });
-
-  // Show prompts again
-  // setTimeout(() => {
-  //   options();
-  // }, 1000);
-  // options();
 };
 
 const viewRoles = async () => {
@@ -79,26 +72,19 @@ const viewRoles = async () => {
   } catch (error) {
     console.log(error);
   }
-
-  // db.query(sql, (err, results) => {
-  //   if (err) throw err;
-  //   console.log("Viewing all Roles:");
-  //   cTable(results);
-  // });
 };
 
-const viewEmployees = () => {
+const viewEmployees = async () => {
   const sql = "SELECT * FROM employee";
 
-  db.query(sql, (err, results) => {
-    if (err) throw err;
-    console.log("Viewing all Employees:");
-    cTable(results);
-  });
-  // Show prompts again
-  setTimeout(() => {
+  try {
+    const [data] = await db.promise().query(sql);
+    cTable(data);
+    // omit options for viewmanagers?
     options();
-  }, 1000);
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const addDepartment = () => {
@@ -151,6 +137,7 @@ const addEmployee = async () => {
     console.log(managers);
     console.log({ managers });
     console.log([managers]);
+    cTable([managers.first_name]);
 
     // inquirer what is name of employee
     const responses = await inquirer.prompt([
@@ -175,10 +162,11 @@ const addEmployee = async () => {
     // define sql by getting managers?
     let sql = "SELECT first_name FROM employee WHERE manager_id = null";
 
+    cTable(managers); //
     const [data] = await db.promise().query(sql); // sql is not defined
     console.log(data.managers);
     cTable(data); // undef
-    cTable(managers); //
+
     cTable(data.first_name);
     cTable(data.id); // undef
     // options();

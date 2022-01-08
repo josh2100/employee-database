@@ -111,44 +111,30 @@ const viewManagers = async () => {
   return;
 };
 
-const addDepartment = () => {
-  // Start with inquirer, ask what to name the department
-  return inquirer
-    .prompt([
+const addDepartment = async () => {
+  try {
+    const responses = await inquirer.prompt([
       {
         type: "input",
         name: "nameOfDepartment",
         message: "Input name of new Department",
       },
-    ])
-    .then((responses) => {
-      const params = [responses.nameOfDepartment];
-      const sql = "INSERT into department (department_name) VALUES (?)";
+    ]);
 
-      console.log(params);
-
-      db.query(sql, params, (err, result) => {
-        if (err) {
-          console.log(err);
-          return;
-        }
-        console.log("New Department added");
-        options();
-      });
+    const params = [responses.nameOfDepartment];
+    const sql = "INSERT into department (department_name) VALUES (?)";
+    // console.log(params);
+    db.query(sql, params, (err, result) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      console.log(`New Department added: ${responses.nameOfDepartment}`);
+      options();
     });
-
-  // const params = [responses.name]
-
-  // db.query(sql, params, (err, result) => {
-  //   if (err) {
-  //     res.status(400).json({ error: err.message });
-  //     return;
-  //   }
-  //   res.json({
-  //     message: "success",
-  //     data: body,
-  //   });
-  // });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const addEmployee = async () => {

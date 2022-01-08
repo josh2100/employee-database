@@ -253,7 +253,6 @@ const addEmployee = async () => {
     };
 
     successMessage();
-    // options(); ///??????? what
   } catch (error) {
     console.log(error);
   }
@@ -289,7 +288,20 @@ const updateEmployeeRole = async () => {
     console.log(`role ID: ${roleQuestion.idOfRole}`);
     // db query with params
 
-    // success message
+    const params = [roleQuestion.idOfRole, employeeQuestion.idOfEmployee];
+    const sql = `UPDATE employee SET role_id = ? WHERE id = ?`;
+
+    db.query(sql, params, (err, result) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+    });
+    const successMessage = async () => {
+      console.log(`Employee Role Updated: ${roleQuestion.idOfRole}`);
+    };
+
+    successMessage();
   } catch (error) {
     console.log(error);
   }

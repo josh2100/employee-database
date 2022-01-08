@@ -2,16 +2,14 @@ const inquirer = require("inquirer");
 const db = require("../db/connection.js");
 const cTable = console.table;
 
-let managers = [];
+// let managers = [];
 let nameInput = [];
 
-// // options: view all departments, view all roles, view all employees,
-// // add a department, add a role, add an employee, and update an employee role
+// add a role, add an employee, and update an employee role
 
-// Inquirer initial prompt, return to this menu after every question
-const options = () => {
-  return inquirer
-    .prompt([
+const options = async () => {
+  try {
+    const selection = await inquirer.prompt([
       {
         type: "list",
         name: "choice",
@@ -22,40 +20,39 @@ const options = () => {
           "View Employees",
           "Add a Department",
           "Add an Employee",
-          "View Managers", // only for testing
+          // "View Managers", // only for testing
           "End",
         ],
       },
-    ])
-    .then((responses) => {
-      switch (responses.choice) {
-        case "View Departments":
-          viewDepartments();
-          break;
-        case "View Roles":
-          viewRoles();
-          break;
-        case "View Employees":
-          viewEmployees();
-          break;
-        case "Add a Department":
-          addDepartment();
-          break;
-        case "Add an Employee":
-          console.log("Add employee here util prompts.js");
-          addEmployee();
-          break;
-
-        case "View Managers":
-          console.log("Add employee here util prompts.js");
-          viewManagers();
-          break;
-
-        default:
-          console.log("Database connection ended");
-          db.end();
-      }
-    });
+    ]);
+    switch (selection.choice) {
+      case "View Departments":
+        viewDepartments();
+        break;
+      case "View Roles":
+        // View Roles doesn't pull up options, due to multiple use cases
+        await viewRoles();
+        options();
+        break;
+      case "View Employees":
+        viewEmployees();
+        break;
+      case "Add a Department":
+        addDepartment();
+        break;
+      case "Add an Employee":
+        addEmployee();
+        break;
+      // case "View Managers":
+      //   viewManagers();
+      //   break;
+      default:
+        console.log("Database connection ended");
+        db.end();
+    }
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const viewDepartments = async () => {
@@ -76,7 +73,8 @@ const viewRoles = async () => {
   try {
     const [data] = await db.promise().query(sql);
     cTable(data);
-    options();
+    // turned off for multiple use cases
+    // options();
   } catch (error) {
     console.log(error);
   }
@@ -99,19 +97,14 @@ const viewManagers = async () => {
   // null safe operator must be used! <=>
   const sql =
     "SELECT first_name, last_name, id FROM employee WHERE manager_id <=> ?";
-  // "SELECT * FROM employee WHERE manager_id <=> ?";
   const params = [null];
 
   try {
     const [data] = await db.promise().query(sql, params);
     cTable(data);
-    // console.log(data);
-    data.forEach(({ first_name }) => {
-      managers.push(first_name);
-    });
-    // console.log("line 111", managers);
-    // omit options for viewmanagers?
-    // options();
+    // data.forEach(({ first_name }) => {
+    //   managers.push(first_name);
+    // });
   } catch (error) {
     console.log(error);
   }
@@ -158,39 +151,6 @@ const addDepartment = () => {
   // });
 };
 
-// const addEmployee = () => {
-//   return inquirer
-//     .prompt([
-//       {
-//         type: "input",
-//         name: "firstName",
-//         message: "Input first name of new Employee",
-//       },
-//       {
-//         type: "input",
-//         name: "lastName",
-//         message: "Input last name of new Employee",
-//       },
-//     ])
-//     .then((responses) => {
-//       console.log(responses.firstName);
-//       console.log("Enter ID of manager for employee");
-//       viewManagers();
-//       return 1;
-//     })
-//     .then((something) => {
-//       // console.log("hey");
-//       // console.log(something);
-//       return inquirer.prompt([
-//         {
-//           type: "input",
-//           name: "lastName",
-//           message: "Input last name of new Employee",
-//         },
-//       ]);
-//     });
-// };
-
 const addEmployee = async () => {
   try {
     const nameQuestions = await inquirer.prompt([
@@ -205,108 +165,41 @@ const addEmployee = async () => {
         message: "Input last name of new Employee",
       },
     ]);
-    console.log(nameQuestions.firstName);
-
-    // viewManagers();
-    // const mangerQuestion = await inquirer.prompt([
-    //   {
-    //     type: "input",
-    //     name: "idManager",
-    //     message: "Input ID of manager below for new Employee",
-    //   },
-    // ]);
-
-    // console.log(managerQuestion.lastName); // breaks async
+    // console.log(nameQuestions.firstName, nameQuestions.lastName);
     await viewManagers();
-    // function askWhichManager could return object with id of manager with validations
-    //
     nameInput.push(nameQuestions);
-    // console.log(nameInput);
+    // console.log("line 172 check names are pushed to nameInput", nameInput);
     const managerQuestion = await inquirer.prompt([
       {
         type: "input",
-        name: "idManager",
+        name: "id",
         message: "Input ID of manager above for new Employee",
       },
     ]);
-    console.log(managerQuestion);
-    // use manager question for new sql query
+    // console.log(managerQuestion);
+    // console.log("manager id:", managerQuestion.id);
+    await viewRoles();
+    const roleQuestion = await inquirer.prompt([
+      {
+        type: "input",
+        name: "role",
+        message: "Input ID of role above for new Employee",
+      },
+    ]);
+    console.log(roleQuestion);
+    console.log("role id:", roleQuestion.role);
+    //////////////// works up to here
+
+    // query database for new employee
   } catch (error) {
     console.log(error);
   }
 
-  // viewManagers();
-  // const mangerQuestion = await inquirer.prompt([
-  //   {
-  //     type: "input",
-  //     name: "idManager",
-  //     message: "Input ID of manager below for new Employee",
-  //   },
-  // ]);
-  // push name to answers
-  // Display list of managers,
-  // inquire what manager this employee reports to
-
   return;
   let managerFunction = (managerQuestion) => {
-    console.log(mangerQuestion);
+    console.log(managerQuestion);
   };
 };
-
-// const addEmployee = async () => {
-//   // viewManagers();
-
-//   try {
-//     // query to find out employees who are managers are null
-//     let [managers] = await db
-//       .promise()
-//       .query("SELECT first_name FROM employee WHERE manager_id = ?", [null]);
-
-//     console.log(managers);
-//     console.log({ managers });
-//     console.log([managers]);
-//     cTable(managers);
-
-//     // inquirer what is name of employee
-//     const responses = await inquirer.prompt([
-//       {
-//         type: "input",
-//         name: "firstName",
-//         message: "Input first name of new Employee",
-//       },
-//       {
-//         type: "input",
-//         name: "lastName",
-//         message: "Input last name of new Employee",
-//       },
-//       {
-//         type: "list",
-//         name: "manager",
-//         message: "Input manager of new Employee",
-//         choices: managers,
-//       },
-//     ]);
-
-//     // define sql by getting managers?
-//     let sql = "SELECT first_name FROM employee WHERE manager_id = null";
-
-//     cTable(managers); //
-//     const [data] = await db.promise().query(sql); // sql is not defined
-//     console.log(data.managers);
-//     cTable(data); // undef
-
-//     cTable(data.first_name);
-//     cTable(data.id); // undef
-//     // options();
-//   } catch (error) {
-//     console.log(error);
-//   }
-
-//   // first name and last name
-//   // what id is their role
-//   //
-//   // what manager do they have
-// };
 
 // options: view all departments - return department names and department ids
 // view all roles -  job title, role id, the department that role belongs to, and

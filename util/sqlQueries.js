@@ -2,9 +2,6 @@ const inquirer = require("inquirer");
 const db = require("../db/connection.js");
 const cTable = console.table;
 
-// let managers = [];
-let nameInput = [];
-
 // add a role, add an employee, and update an employee role
 
 const options = async () => {
@@ -19,8 +16,8 @@ const options = async () => {
           "View Roles",
           "View Employees",
           "Add a Department",
+          "Add a Role",
           "Add an Employee",
-          // "View Managers", // only for testing
           "End",
         ],
       },
@@ -32,7 +29,7 @@ const options = async () => {
       case "View Roles":
         // View Roles doesn't pull up options, due to multiple use cases
         await viewRoles();
-        options();
+        await options();
         break;
       case "View Employees":
         viewEmployees();
@@ -40,12 +37,14 @@ const options = async () => {
       case "Add a Department":
         addDepartment();
         break;
-      case "Add an Employee":
-        addEmployee();
+      //
+      case "Add a Role":
+        addRole();
         break;
-      // case "View Managers":
-      //   viewManagers();
-      //   break;
+      ///
+      case "Add an Employee":
+        await addEmployee();
+        break;
       default:
         console.log("Database connection ended");
         db.end();
@@ -86,7 +85,6 @@ const viewEmployees = async () => {
   try {
     const [data] = await db.promise().query(sql);
     cTable(data);
-    // omit options for viewmanagers?
     options();
   } catch (error) {
     console.log(error);
@@ -102,9 +100,6 @@ const viewManagers = async () => {
   try {
     const [data] = await db.promise().query(sql, params);
     cTable(data);
-    // data.forEach(({ first_name }) => {
-    //   managers.push(first_name);
-    // });
   } catch (error) {
     console.log(error);
   }
@@ -123,15 +118,36 @@ const addDepartment = async () => {
 
     const params = [responses.nameOfDepartment];
     const sql = "INSERT into department (department_name) VALUES (?)";
-    // console.log(params);
+
     db.query(sql, params, (err, result) => {
       if (err) {
         console.log(err);
         return;
       }
-      console.log(`New Department added: ${responses.nameOfDepartment}`);
-      options();
     });
+
+    const successMessage = async () => {
+      console.log(`New Department added: ${responses.nameOfDepartment}`);
+    };
+
+    successMessage();
+    options();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const addRole = async () => {
+  try {
+    const responses = await inquirer.prompt([
+      {
+        type: "input",
+        name: "nameOfRole",
+        message: "Input name of role",
+      },
+    ]);
+
+    // view departments
   } catch (error) {
     console.log(error);
   }
@@ -151,10 +167,7 @@ const addEmployee = async () => {
         message: "Input last name of new Employee",
       },
     ]);
-    // console.log(nameQuestions.firstName, nameQuestions.lastName);
     await viewManagers();
-    nameInput.push(nameQuestions);
-    // console.log("line 172 check names are pushed to nameInput", nameInput);
     const managerQuestion = await inquirer.prompt([
       {
         type: "input",
@@ -162,8 +175,6 @@ const addEmployee = async () => {
         message: "Input ID of manager above for new Employee",
       },
     ]);
-    // console.log(managerQuestion);
-    // console.log("manager id:", managerQuestion.id);
     await viewRoles();
     const roleQuestion = await inquirer.prompt([
       {
@@ -172,20 +183,36 @@ const addEmployee = async () => {
         message: "Input ID of role above for new Employee",
       },
     ]);
-    console.log(roleQuestion);
-    console.log("role id:", roleQuestion.role);
-    //////////////// works up to here
 
-    // query database for new employee
+    const params = [
+      nameQuestions.firstName,
+      nameQuestions.lastName,
+      roleQuestion.role,
+      managerQuestion.id,
+    ];
+    const sql =
+      "INSERT into employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)";
+
+    db.query(sql, params, (err, result) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+    });
+    const successMessage = async () => {
+      console.log(
+        `New Employee added: ${nameQuestions.firstName} ${nameQuestions.lastName}`
+      );
+    };
+
+    successMessage();
+    options();
   } catch (error) {
     console.log(error);
   }
-
-  return;
-  let managerFunction = (managerQuestion) => {
-    console.log(managerQuestion);
-  };
 };
+
+options();
 
 // options: view all departments - return department names and department ids
 // view all roles -  job title, role id, the department that role belongs to, and

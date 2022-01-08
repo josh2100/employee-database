@@ -2,6 +2,9 @@ const inquirer = require("inquirer");
 const db = require("../db/connection.js");
 const cTable = console.table;
 
+let managers = [];
+let nameInput = [];
+
 // // options: view all departments, view all roles, view all employees,
 // // add a department, add a role, add an employee, and update an employee role
 
@@ -94,17 +97,25 @@ const viewEmployees = async () => {
 
 const viewManagers = async () => {
   // null safe operator must be used! <=>
-  const sql = "SELECT first_name FROM employee WHERE manager_id <=> ?";
+  const sql =
+    "SELECT first_name, last_name, id FROM employee WHERE manager_id <=> ?";
+  // "SELECT * FROM employee WHERE manager_id <=> ?";
   const params = [null];
 
   try {
     const [data] = await db.promise().query(sql, params);
     cTable(data);
+    // console.log(data);
+    data.forEach(({ first_name }) => {
+      managers.push(first_name);
+    });
+    // console.log("line 111", managers);
     // omit options for viewmanagers?
-    options();
+    // options();
   } catch (error) {
     console.log(error);
   }
+  return;
 };
 
 const addDepartment = () => {
@@ -147,13 +158,42 @@ const addDepartment = () => {
   // });
 };
 
+// const addEmployee = () => {
+//   return inquirer
+//     .prompt([
+//       {
+//         type: "input",
+//         name: "firstName",
+//         message: "Input first name of new Employee",
+//       },
+//       {
+//         type: "input",
+//         name: "lastName",
+//         message: "Input last name of new Employee",
+//       },
+//     ])
+//     .then((responses) => {
+//       console.log(responses.firstName);
+//       console.log("Enter ID of manager for employee");
+//       viewManagers();
+//       return 1;
+//     })
+//     .then((something) => {
+//       // console.log("hey");
+//       // console.log(something);
+//       return inquirer.prompt([
+//         {
+//           type: "input",
+//           name: "lastName",
+//           message: "Input last name of new Employee",
+//         },
+//       ]);
+//     });
+// };
+
 const addEmployee = async () => {
-  // Make array of responses
-  let answers = [];
-  // inquire first and last name of employees
   try {
-    // inquirer what is name of employee
-    const responses = await inquirer.prompt([
+    const nameQuestions = await inquirer.prompt([
       {
         type: "input",
         name: "firstName",
@@ -164,25 +204,53 @@ const addEmployee = async () => {
         name: "lastName",
         message: "Input last name of new Employee",
       },
-      // {
-      //   type: "list",
-      //   name: "manager",
-      //   message: "Input manager of new Employee",
-      //   choices: managers,
-      // },
     ]);
-    console.log(responses);
-    console.log(responses.firstName);
-    viewManagers();
+    console.log(nameQuestions.firstName);
 
+    // viewManagers();
+    // const mangerQuestion = await inquirer.prompt([
+    //   {
+    //     type: "input",
+    //     name: "idManager",
+    //     message: "Input ID of manager below for new Employee",
+    //   },
+    // ]);
+
+    // console.log(managerQuestion.lastName); // breaks async
+    await viewManagers();
     // function askWhichManager could return object with id of manager with validations
     //
+    nameInput.push(nameQuestions);
+    // console.log(nameInput);
+    const managerQuestion = await inquirer.prompt([
+      {
+        type: "input",
+        name: "idManager",
+        message: "Input ID of manager above for new Employee",
+      },
+    ]);
+    console.log(managerQuestion);
+    // use manager question for new sql query
   } catch (error) {
     console.log(error);
   }
+
+  // viewManagers();
+  // const mangerQuestion = await inquirer.prompt([
+  //   {
+  //     type: "input",
+  //     name: "idManager",
+  //     message: "Input ID of manager below for new Employee",
+  //   },
+  // ]);
   // push name to answers
   // Display list of managers,
   // inquire what manager this employee reports to
+
+  return;
+  let managerFunction = (managerQuestion) => {
+    console.log(mangerQuestion);
+  };
 };
 
 // const addEmployee = async () => {

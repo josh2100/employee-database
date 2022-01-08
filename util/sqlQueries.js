@@ -2,7 +2,7 @@ const inquirer = require("inquirer");
 const db = require("../db/connection.js");
 const cTable = console.table;
 
-// add a role, add an employee, and update an employee role
+// and update an employee role
 
 const options = async () => {
   try {
@@ -18,33 +18,43 @@ const options = async () => {
           "Add a Department",
           "Add a Role",
           "Add an Employee",
+          "Update Employee Role",
           "End",
         ],
       },
     ]);
+
     switch (selection.choice) {
       case "View Departments":
-        viewDepartments();
+        await viewDepartments();
+        options();
         break;
       case "View Roles":
-        // View Roles doesn't pull up options, due to multiple use cases
         await viewRoles();
-        await options();
+        options();
         break;
       case "View Employees":
-        viewEmployees();
+        await viewEmployees();
+        options();
         break;
       case "Add a Department":
-        addDepartment();
+        await addDepartment();
+        options();
         break;
-      //
       case "Add a Role":
-        addRole();
+        await addRole();
+        options();
         break;
-      ///
       case "Add an Employee":
         await addEmployee();
+        options();
         break;
+
+      case "Update Employee Role":
+        await updateEmployeeRole();
+        options();
+        break;
+
       default:
         console.log("Database connection ended");
         db.end();
@@ -60,7 +70,6 @@ const viewDepartments = async () => {
   try {
     const [data] = await db.promise().query(sql);
     cTable(data);
-    options();
   } catch (error) {
     console.log(error);
   }
@@ -72,8 +81,6 @@ const viewRoles = async () => {
   try {
     const [data] = await db.promise().query(sql);
     cTable(data);
-    // turned off for multiple use cases
-    // options();
   } catch (error) {
     console.log(error);
   }
@@ -85,7 +92,6 @@ const viewEmployees = async () => {
   try {
     const [data] = await db.promise().query(sql);
     cTable(data);
-    options();
   } catch (error) {
     console.log(error);
   }
@@ -131,7 +137,7 @@ const addDepartment = async () => {
     };
 
     successMessage();
-    options();
+    // options();
   } catch (error) {
     console.log(error);
   }
@@ -143,11 +149,52 @@ const addRole = async () => {
       {
         type: "input",
         name: "nameOfRole",
-        message: "Input name of role",
+        message: "Input title of role",
       },
     ]);
 
-    // view departments
+    const salaryQuestion = await inquirer.prompt([
+      {
+        type: "input",
+        name: "salary",
+        message: "Input salary for role",
+      },
+    ]);
+
+    await viewDepartments();
+
+    const departmentQuestion = await inquirer.prompt([
+      {
+        type: "input",
+        name: "nameDepartment",
+        message: "Input id of department for this role",
+      },
+    ]);
+
+    console.log(`nameOfRole: ${responses.nameOfRole}`);
+    console.log(`salary: ${salaryQuestion.salary}`);
+    console.log(`department: ${departmentQuestion.nameDepartment}`);
+
+    const params = [
+      responses.nameOfRole,
+      salaryQuestion.salary,
+      departmentQuestion.nameDepartment,
+    ];
+    const sql =
+      "INSERT into roles (title, salary, department_id) VALUES (?,?,?)";
+
+    db.query(sql, params, (err, result) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+    });
+
+    const successMessage = async () => {
+      console.log(`New Role added: ${responses.nameOfRole}`);
+    };
+
+    successMessage();
   } catch (error) {
     console.log(error);
   }
@@ -206,7 +253,43 @@ const addEmployee = async () => {
     };
 
     successMessage();
-    options();
+    // options(); ///??????? what
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const updateEmployeeRole = async () => {
+  try {
+    console.log("");
+    // display employees
+    await viewEmployees();
+    // inquire which employee to update
+    const employeeQuestion = await inquirer.prompt([
+      {
+        type: "input",
+        name: "idOfEmployee",
+        message: "Input id of Employee to update",
+      },
+    ]);
+    console.log(`Employee ID: ${employeeQuestion.idOfEmployee}`);
+    // inquire id of new role
+
+    await viewRoles();
+
+    const roleQuestion = await inquirer.prompt([
+      {
+        type: "input",
+        name: "idOfRole",
+        message: "Input id of employee's new role",
+      },
+    ]);
+
+    console.log(`Employee ID: ${employeeQuestion.idOfEmployee}`);
+    console.log(`role ID: ${roleQuestion.idOfRole}`);
+    // db query with params
+
+    // success message
   } catch (error) {
     console.log(error);
   }

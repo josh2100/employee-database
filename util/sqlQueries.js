@@ -19,6 +19,7 @@ const options = async () => {
           "Update Employee Role",
           "Delete an Employee",
           "Delete a Department",
+          "Delete a Role",
           "End",
         ],
       },
@@ -59,6 +60,10 @@ const options = async () => {
         break;
       case "Delete a Department":
         await deleteDepartment();
+        options();
+        break;
+      case "Delete a Role":
+        await deleteRole();
         options();
         break;
       default:
@@ -390,6 +395,45 @@ const deleteDepartment = async () => {
   }
 };
 
+const deleteRole = async () => {
+  try {
+    await viewRoles();
+    const roleQuestion = await inquirer.prompt([
+      {
+        type: "input",
+        name: "idOfRole",
+        message: "Input id of Role to DELETE",
+        validate: (v) => {
+          if (v) {
+            return true;
+          } else {
+            console.log("Please enter a valid number.");
+            return false;
+          }
+        },
+      },
+    ]);
+
+    const params = [roleQuestion.idOfRole];
+    const sql = `DELETE FROM roles WHERE id = ?`;
+
+    db.query(sql, params, (err, result) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+    });
+
+    const successMessage = async () => {
+      console.log(`Role Deleted: ${roleQuestion.idOfDepartment}`);
+    };
+
+    successMessage();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 // options();
 
 // options: view all departments - return department names and department ids
@@ -409,7 +453,7 @@ const deleteDepartment = async () => {
 // Update employee managers.
 // View employees by manager,
 // View employees by department.
-// Delete departments, roles, and employees. -----
+// Delete departments, roles, and employees. - -
 // View the total utilized budget of a department—in other words,
 // the combined salaries of all employees in that department.
 

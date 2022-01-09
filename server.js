@@ -1,4 +1,4 @@
-// const inquirer = require("inquirer");
+const inquirer = require("inquirer");
 
 const {
   viewDepartments,
@@ -14,6 +14,6 @@ const db = require("./db/connection");
 // Start SQL connection
 db.connect((err) => {
   if (err) throw err;
-
-  // options();
 });
+
+options();

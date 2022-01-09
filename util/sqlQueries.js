@@ -2,8 +2,6 @@ const inquirer = require("inquirer");
 const db = require("../db/connection.js");
 const cTable = console.table;
 
-// and update an employee role
-
 const options = async () => {
   try {
     const selection = await inquirer.prompt([
@@ -19,6 +17,8 @@ const options = async () => {
           "Add a Role",
           "Add an Employee",
           "Update Employee Role",
+          "Delete an Employee",
+          "Delete a Department",
           "End",
         ],
       },
@@ -49,12 +49,18 @@ const options = async () => {
         await addEmployee();
         options();
         break;
-
       case "Update Employee Role":
         await updateEmployeeRole();
         options();
         break;
-
+      case "Delete an Employee":
+        await deleteEmployee();
+        options();
+        break;
+      case "Delete a Department":
+        await deleteDepartment();
+        options();
+        break;
       default:
         console.log("Database connection ended");
         db.end();
@@ -98,7 +104,6 @@ const viewEmployees = async () => {
 };
 
 const viewManagers = async () => {
-  // null safe operator must be used! <=>
   const sql =
     "SELECT first_name, last_name, id FROM employee WHERE manager_id <=> ?";
   const params = [null];
@@ -271,7 +276,7 @@ const updateEmployeeRole = async () => {
         message: "Input id of Employee to update",
       },
     ]);
-    console.log(`Employee ID: ${employeeQuestion.idOfEmployee}`);
+    // console.log(`Employee ID: ${employeeQuestion.idOfEmployee}`);
     // inquire id of new role
 
     await viewRoles();
@@ -307,7 +312,85 @@ const updateEmployeeRole = async () => {
   }
 };
 
-options();
+const deleteEmployee = async () => {
+  try {
+    await viewEmployees();
+    const employeeQuestion = await inquirer.prompt([
+      {
+        type: "input",
+        name: "idOfEmployee",
+        message: "Input id of Employee to DELETE",
+        validate: (v) => {
+          if (v) {
+            return true;
+          } else {
+            console.log("Please enter a valid number.");
+            return false;
+          }
+        },
+      },
+    ]);
+
+    const params = [employeeQuestion.idOfEmployee];
+    const sql = `DELETE FROM employee WHERE id = ?`;
+
+    db.query(sql, params, (err, result) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+    });
+
+    const successMessage = async () => {
+      console.log(`Employee Deleted: ${employeeQuestion.idOfEmployee}`);
+    };
+
+    successMessage();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const deleteDepartment = async () => {
+  try {
+    await viewDepartments();
+    const departmentQuestion = await inquirer.prompt([
+      {
+        type: "input",
+        name: "idOfDepartment",
+        message: "Input id of Department to DELETE",
+        validate: (v) => {
+          if (v) {
+            return true;
+          } else {
+            console.log("Please enter a valid number.");
+            return false;
+          }
+        },
+      },
+    ]);
+
+    const params = [departmentQuestion.idOfDepartment];
+    const sql = `DELETE FROM department WHERE id = ?`;
+
+    db.query(sql, params, (err, result) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+    });
+
+    const successMessage = async () => {
+      console.log(`Department Deleted: ${departmentQuestion.idOfDepartment}`);
+    };
+
+    successMessage();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// options();
 
 // options: view all departments - return department names and department ids
 // view all roles -  job title, role id, the department that role belongs to, and
@@ -326,7 +409,7 @@ options();
 // Update employee managers.
 // View employees by manager,
 // View employees by department.
-// Delete departments, roles, and employees.
+// Delete departments, roles, and employees. -----
 // View the total utilized budget of a department—in other words,
 // the combined salaries of all employees in that department.
 

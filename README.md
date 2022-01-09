@@ -19,13 +19,13 @@ Demo video at (link here)
 
 ## Installation
 
-Use npm install to install mySQL2, inquirer, dotenv, console.table, and associated modules, which are required for this application.
+Use "npm install" to install mySQL2, inquirer, dotenv, console.table, and associated modules which are required for this application.
 
 ## Usage
 
 ![Node Team Builder Screenshot](./images/screenshot.png)
 
-Run node index on your command line while in root directory. Answer all the questions
+Run "node index" on your command line while in root directory. Answer all the questions, and select end to exit.
 
 ## License
 
@@ -39,7 +39,7 @@ Fork the project and create a pull request. Let me know how you think you can co
 
 ## Technologies
 
-Created with MySQL, Node.js, Inquirer, console.table, and dotenv.
+Created with MySQL, MySQL2, Node.js, Inquirer, console.table, and dotenv.
 
 ## Credits
 

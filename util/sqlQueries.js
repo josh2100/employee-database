@@ -17,9 +17,11 @@ const options = async () => {
           "Add a Role",
           "Add an Employee",
           "Update Employee Role",
+          "View Employees by Manager",
           "Delete an Employee",
           "Delete a Department",
           "Delete a Role",
+          "View total utilized budget by department",
           "End",
         ],
       },
@@ -54,6 +56,13 @@ const options = async () => {
         await updateEmployeeRole();
         options();
         break;
+
+      //"View Employees by Manager"
+      case "View Employees by Manager":
+        await viewEmployeesByManager();
+        options();
+        break;
+
       case "Delete an Employee":
         await deleteEmployee();
         options();
@@ -64,6 +73,10 @@ const options = async () => {
         break;
       case "Delete a Role":
         await deleteRole();
+        options();
+        break;
+      case "View total utilized budget by department":
+        await viewBudget();
         options();
         break;
       default:
@@ -110,7 +123,7 @@ const viewEmployees = async () => {
 
 const viewManagers = async () => {
   const sql =
-    "SELECT first_name, last_name, id FROM employee WHERE manager_id <=> ?";
+    "SELECT first_name, last_name, id, role_id FROM employee WHERE manager_id <=> ?";
   const params = [null];
 
   try {
@@ -317,6 +330,33 @@ const updateEmployeeRole = async () => {
   }
 };
 
+const viewEmployeesByManager = async () => {
+  // display managers viewManagers();
+  // ask which manager to view
+  // query
+
+  try {
+    await viewManagers();
+
+    const responses = await inquirer.prompt([
+      {
+        type: "input",
+        name: "idOfManager",
+        message: "Input id of manager to view employees by manager",
+      },
+    ]);
+
+    const params = [responses.idOfManager];
+    const sql =
+      "SELECT first_name, last_name, role_id FROM employee WHERE manager_id = ?";
+
+    const [data] = await db.promise().query(sql, params);
+    cTable(data);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const deleteEmployee = async () => {
   try {
     await viewEmployees();
@@ -434,13 +474,46 @@ const deleteRole = async () => {
   }
 };
 
-// options();
+const viewBudget = async () => {
+  try {
+    await viewRoles();
+    const departmentQuestion = await inquirer.prompt([
+      {
+        type: "input",
+        name: "idOfDepartment",
+        message: "Input id of Department to see total utilized budget",
+        validate: (v) => {
+          if (v) {
+            return true;
+          } else {
+            console.log("Please enter a valid number.");
+            return false;
+          }
+        },
+      },
+    ]);
+
+    const params = [departmentQuestion.idOfDepartment];
+    const sql = `	SELECT SUM(salary) FROM roles WHERE department_id = ?;`;
+
+    const [budget] = await db.promise().query(sql, params, (err, result) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+    });
+
+    cTable(budget);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 // options: view all departments - return department names and department ids
 // view all roles -  job title, role id, the department that role belongs to, and
-// the salary for that role
+// the salary for that role JOIN TABLE TO SEE DEPARTMENT INSTEAD OF ID???
 // view all employees- including employee ids, first names, last names, job titles,
-// departments, salaries, and managers that the employees report to
+// departments, salaries, and managers that the employees report to SUPER JOIN???
 // add a department- enter name of department and it's added to the database
 // add a role - name, salary, and department for the role it's added to database
 // add an employee- first name, last name, role, and manager, and that employee is added
@@ -453,8 +526,8 @@ const deleteRole = async () => {
 // Update employee managers.
 // View employees by manager,
 // View employees by department.
-// Delete departments, roles, and employees. - -
-// View the total utilized budget of a department—in other words,
+// Delete departments, roles, and employees. - - -
+// View the total utilized budget of a department—in other words, -------
 // the combined salaries of all employees in that department.
 
 module.exports = {

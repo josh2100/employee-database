@@ -3,7 +3,7 @@
 This node application allows a user to maintain an employee database from command line interface.
 Inquirer is used to generate questions, and MySQL is updated for responses.
 
-Demo video at (link here)
+Demo video at https://drive.google.com/file/d/1-Y61f2fyRrBVxmkbaVlvKTSjaHd0f01l/view
 
 ![Employee Database Screenshot](./images/screenshot.png)
 
@@ -19,13 +19,11 @@ Demo video at (link here)
 
 ## Installation
 
-Install MySQL on your machine. Use "npm install" to install mySQL2, inquirer, dotenv, console.table, and associated modules which are required for this application. Create your own .env file add add your MySQL credentials. Create database, tables, and seeds by running "SOURCE db/db.sql", run "SOURCE db/schema.sql", and "SOURCE db/seeds.sql. Run "node server" and you will be prompted with database management options. 
+Install MySQL on your machine. Use "npm install" to install mySQL2, inquirer, dotenv, console.table, and associated modules which are required for this application. Create your own .env file add add your MySQL credentials. Create database, tables, and seeds by running "SOURCE db/db.sql", run "SOURCE db/schema.sql", and "SOURCE db/seeds.sql. Run "node server" and you will be prompted with database management options.
 
 ## Usage
 
-![Employee Database Screenshot](./images/screenshot.png)
-
-Run "node index" on your command line while in root directory. Answer all the questions, and select end to exit.
+Run "node server" on your command line while in root directory. Answer all the questions, and select end to exit.
 
 ## License
 

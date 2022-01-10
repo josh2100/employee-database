@@ -453,7 +453,7 @@ const deleteRole = async () => {
     });
 
     const successMessage = async () => {
-      console.log(`Role Deleted: ${roleQuestion.idOfDepartment}`);
+      console.log(`Role Deleted: ${roleQuestion.idOfRole}`);
     };
 
     successMessage();

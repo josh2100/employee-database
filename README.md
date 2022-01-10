@@ -19,11 +19,11 @@ Demo video at (link here)
 
 ## Installation
 
-Use "npm install" to install mySQL2, inquirer, dotenv, console.table, and associated modules which are required for this application.
+Install MySQL on your machine. Use "npm install" to install mySQL2, inquirer, dotenv, console.table, and associated modules which are required for this application. Create your own .env file add add your MySQL credentials. Create database, tables, and seeds by running "SOURCE db/db.sql", run "SOURCE db/schema.sql", and "SOURCE db/seeds.sql. Run "node server" and you will be prompted with database management options. 
 
 ## Usage
 
-![Node Team Builder Screenshot](./images/screenshot.png)
+![Employee Database Screenshot](./images/screenshot.png)
 
 Run "node index" on your command line while in root directory. Answer all the questions, and select end to exit.
 

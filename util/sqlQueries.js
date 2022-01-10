@@ -2,6 +2,7 @@ const inquirer = require("inquirer");
 const db = require("../db/connection.js");
 const cTable = console.table;
 
+// Main menu for database options
 const options = async () => {
   try {
     const selection = await inquirer.prompt([
@@ -56,13 +57,10 @@ const options = async () => {
         await updateEmployeeRole();
         options();
         break;
-
-      //"View Employees by Manager"
       case "View Employees by Manager":
         await viewEmployeesByManager();
         options();
         break;
-
       case "Delete an Employee":
         await deleteEmployee();
         options();
@@ -160,7 +158,6 @@ const addDepartment = async () => {
     };
 
     successMessage();
-    // options();
   } catch (error) {
     console.log(error);
   }
@@ -285,9 +282,9 @@ const addEmployee = async () => {
 const updateEmployeeRole = async () => {
   try {
     console.log("");
-    // display employees
+    // Display employees
     await viewEmployees();
-    // inquire which employee to update
+    // Inquire which employee to update
     const employeeQuestion = await inquirer.prompt([
       {
         type: "input",
@@ -295,8 +292,6 @@ const updateEmployeeRole = async () => {
         message: "Input id of Employee to update",
       },
     ]);
-    // console.log(`Employee ID: ${employeeQuestion.idOfEmployee}`);
-    // inquire id of new role
 
     await viewRoles();
 
@@ -307,10 +302,6 @@ const updateEmployeeRole = async () => {
         message: "Input id of employee's new role",
       },
     ]);
-
-    console.log(`Employee ID: ${employeeQuestion.idOfEmployee}`);
-    console.log(`role ID: ${roleQuestion.idOfRole}`);
-    // db query with params
 
     const params = [roleQuestion.idOfRole, employeeQuestion.idOfEmployee];
     const sql = `UPDATE employee SET role_id = ? WHERE id = ?`;
@@ -332,10 +323,6 @@ const updateEmployeeRole = async () => {
 };
 
 const viewEmployeesByManager = async () => {
-  // display managers viewManagers();
-  // ask which manager to view
-  // query
-
   try {
     await viewManagers();
 
@@ -509,27 +496,6 @@ const viewBudget = async () => {
     console.log(error);
   }
 };
-
-// options: view all departments - return department names and department ids
-// view all roles -  job title, role id, the department that role belongs to, and
-// the salary for that role JOIN TABLE TO SEE DEPARTMENT INSTEAD OF ID???
-// view all employees- including employee ids, first names, last names, job titles,
-// departments, salaries, and managers that the employees report to SUPER JOIN???
-// add a department- enter name of department and it's added to the database
-// add a role - name, salary, and department for the role it's added to database
-// add an employee- first name, last name, role, and manager, and that employee is added
-// update employee role- select an employee to update and their new role and this information
-// is updated in the database
-
-// Bonus
-// Try to add some additional functionality to your application, such as
-// the ability to do the following:
-// Update employee managers.
-// View employees by manager, --
-// View employees by department.
-// Delete departments, roles, and employees. - - -
-// View the total utilized budget of a department—in other words, -------
-// the combined salaries of all employees in that department.
 
 module.exports = {
   options,
